@@ -4,9 +4,10 @@
   "description": "A server node with clean archi and TDD",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "standard:check":"npx standard",
-    "standard:fix":"npx standard"
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "lint-staged": {
+    "*.ts": "npx eslint ."
   },
   "repository": {
     "type": "git",
@@ -18,10 +19,12 @@
     "url": "https://github.com/TsitouhRanjafy/clean-archi-node-api/issues"
   },
   "homepage": "https://github.com/TsitouhRanjafy/clean-archi-node-api#readme",
-  "dependencies": {
-    "typescript": "^5.8.2"
-  },
   "devDependencies": {
-    "standard": "^17.1.2"
+    "@eslint/js": "^9.23.0",
+    "eslint": "^9.23.0",
+    "jiti": "^2.4.2",
+    "lint-staged": "^15.5.0",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.28.0"
   }
 }
