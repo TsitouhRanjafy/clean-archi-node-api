@@ -1,0 +1,27 @@
+{
+  "name": "node-archi",
+  "version": "0.0.1",
+  "description": "A server node with clean archi and TDD",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "standard:check":"npx standard",
+    "standard:fix":"npx standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TsitouhRanjafy/clean-archi-node-api.git"
+  },
+  "author": "Tsitohaina",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TsitouhRanjafy/clean-archi-node-api/issues"
+  },
+  "homepage": "https://github.com/TsitouhRanjafy/clean-archi-node-api#readme",
+  "dependencies": {
+    "typescript": "^5.8.2"
+  },
+  "devDependencies": {
+    "standard": "^17.1.2"
+  }
+}
