@@ -4,7 +4,6 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
-// @ts-expect-error import.meta.dirname n'est pas typé correctement par defaut 
 const tsconfigRoot = ""+import.meta.dirname // parser en string
 
 export default tseslint.config(
@@ -15,7 +14,10 @@ export default tseslint.config(
 		languageOptions: {
 			parserOptions: {
 				projectService: { 
-					allowDefaultProject: [ "eslint.config.mjs" ],
+					allowDefaultProject: [ 
+						"eslint.config.mjs",
+						"babel.config.js",
+					],
 					defaultProject: "tsconfig.json"
 				 },
 				project: "tsconfig.json",
@@ -24,6 +26,5 @@ export default tseslint.config(
 				sourceType: "module"
 			},
 		},
-  	},
-	
+	}
 ) 
