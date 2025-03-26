@@ -23,10 +23,10 @@ export class LoginRouter {
                 statusCode: StatusCodes.BAD_REQUEST
             }
         }
+        this.authUseCase.auth(email,password);
         return {
-            body: { email,password },
-            statusCode: StatusCodes.OK
+            body: { email: '',password: '' },
+            statusCode: StatusCodes.UNAUTHORIZED
         }
-        this.authUseCase.auth('other_email','password');
     }
 }

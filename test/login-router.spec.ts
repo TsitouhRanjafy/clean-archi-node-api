@@ -77,4 +77,17 @@ describe('Login Router',() => {
         expect(authUseCaseSpy.email).toBe(body.email)
         expect(authUseCaseSpy.password).toBe(body.password)
     })
+
+    test(`Should return ${StatusCodes.UNAUTHORIZED} when invalid credntials are provided`,() => {
+        const { sut } = makeSut()
+        const httpRequest: httpRequest = {
+            body: {
+                email: "any_email@gmail.com",
+                password: "any_password"
+            },
+            statusCode: 0
+        }
+        const httpResponse = sut.route(httpRequest)
+        expect(httpResponse.statusCode).toBe(StatusCodes.UNAUTHORIZED)
+    })
 })
