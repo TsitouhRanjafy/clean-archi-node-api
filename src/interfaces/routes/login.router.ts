@@ -14,7 +14,7 @@ export class LoginRouter {
         this.authUseCase = authUseCase
     }
 
-    route(httpRequest: httpRequest): httpRequest {
+    async route(httpRequest: httpRequest): Promise<httpRequest> {
         try {
             const { email,password } = httpRequest.body as login
             if (!email || !password){
@@ -23,7 +23,7 @@ export class LoginRouter {
                     statusCode: StatusCodes.BAD_REQUEST
                 }
             }
-            const accessToken = this.authUseCase.auth(email,password);
+            const accessToken = await this.authUseCase.auth(email,password);
             if (!accessToken){
                 return {
                     body: new UnauthorizedError(),
@@ -35,7 +35,7 @@ export class LoginRouter {
                 body: accessToken
             }
         } catch (error) {
-            console.log(error);
+            console.log("++",error);
             return {
                 body: new ServerError(),
                 statusCode: StatusCodes.INTERNAL_SERVER_ERROR

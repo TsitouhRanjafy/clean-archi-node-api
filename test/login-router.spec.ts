@@ -12,7 +12,7 @@ export class AuthUseCaseSpy {
     password!: string;
     accesToken!:string | null;
     
-    auth(email: string,password: string): string | null {
+    async auth(email: string,password: string): Promise<string | null> { // eslint-disable-line 
         this.email = email;
         this.password = password;
         return this.accesToken;
@@ -30,7 +30,7 @@ const makeAuthUseCaseWithError = () => {
         password!: string;
         accesToken!:string | null;
         
-        auth(email: string,password: string): string | null {
+        async auth(email: string,password: string): Promise<string | null> { // eslint-disable-line 
             this.email = email;
             this.password = password;
             throw new Error()
@@ -53,7 +53,7 @@ const makeSut = () => {
 }
 
 describe('Login Router',() => {
-    test(`Should return ${StatusCodes.BAD_REQUEST} if no email is provided`,() => {
+    test(`Should return ${StatusCodes.BAD_REQUEST} if no email is provided`,async () => {
         const { sut } = makeSut()
         const httpRequest: httpRequest = {
             body: {
@@ -62,12 +62,12 @@ describe('Login Router',() => {
             },
             statusCode: 0
         } 
-        const httpResponse: httpRequest = sut.route(httpRequest)
+        const httpResponse: httpRequest = await sut.route(httpRequest)
         expect(httpResponse.statusCode).toBe(StatusCodes.BAD_REQUEST)
         expect(httpResponse.body).toEqual(new MissingParamError('email or password'))
     })
 
-    test(`Should return ${StatusCodes.BAD_REQUEST} if no password is provided`,() => {
+    test(`Should return ${StatusCodes.BAD_REQUEST} if no password is provided`,async () => {
         const { sut } = makeSut()
         const httpRequest: httpRequest = {
             body: {
@@ -76,20 +76,20 @@ describe('Login Router',() => {
             },
             statusCode: 0
         } 
-        const httpResponse: httpRequest = sut.route(httpRequest)
+        const httpResponse: httpRequest = await sut.route(httpRequest)
         expect(httpResponse.statusCode).toBe(StatusCodes.BAD_REQUEST)
         expect(httpResponse.body).toEqual(new MissingParamError('email or password'))
     })
 
-    test(`Should return ${StatusCodes.INTERNAL_SERVER_ERROR} if no httpRequest is provided or httpRequest has no body`,() => {
+    test(`Should return ${StatusCodes.INTERNAL_SERVER_ERROR} if no httpRequest is provided or httpRequest has no body`,async () => {
         const { sut } = makeSut()
         const httpRequest: any = undefined; // eslint-disable-line 
-        const httpResponse: httpRequest = sut.route(httpRequest) // eslint-disable-line 
+        const httpResponse: httpRequest = await sut.route(httpRequest) // eslint-disable-line 
         expect(httpResponse.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR)
         expect(httpResponse.body).toEqual(new ServerError())
     })
 
-    test(`Should call AuthUseCase with correct params`,() => {
+    test(`Should call AuthUseCase with correct params`,async () => {
         const { sut, authUseCaseSpy } = makeSut()
         const httpRequest: httpRequest = {
             body: {
@@ -99,12 +99,12 @@ describe('Login Router',() => {
             statusCode: 0
         }
         const body: login = httpRequest.body as login
-        sut.route(httpRequest)
+        await sut.route(httpRequest)
         expect(authUseCaseSpy.email).toBe(body.email)
         expect(authUseCaseSpy.password).toBe(body.password)
     })
 
-    test(`Should return ${StatusCodes.UNAUTHORIZED} when invalid credentials are provided`,() => {
+    test(`Should return ${StatusCodes.UNAUTHORIZED} when invalid credentials are provided`,async () => {
         const { sut, authUseCaseSpy } = makeSut();
         authUseCaseSpy.accesToken = null
         const httpRequest: httpRequest = {
@@ -114,12 +114,12 @@ describe('Login Router',() => {
             },
             statusCode: 0
         }
-        const httpResponse = sut.route(httpRequest)
+        const httpResponse = await sut.route(httpRequest)
         expect(httpResponse.statusCode).toBe(StatusCodes.UNAUTHORIZED)
         expect(httpResponse.body).toEqual(new UnauthorizedError())
     })
 
-    test(`Should return ${StatusCodes.OK} when valid credentials are provided`,() => {
+    test(`Should return ${StatusCodes.OK} when valid credentials are provided`,async () => {
         const { sut, authUseCaseSpy } = makeSut();
         const httpRequest: httpRequest = {
             body: {
@@ -128,12 +128,12 @@ describe('Login Router',() => {
             },
             statusCode: 0
         }
-        const httpResponse = sut.route(httpRequest)
+        const httpResponse = await sut.route(httpRequest)
         expect(httpResponse.statusCode).toBe(StatusCodes.OK);
         expect(httpResponse.body).toEqual(authUseCaseSpy.accesToken);
     })
 
-    test(`Should return ${StatusCodes.INTERNAL_SERVER_ERROR} if AuthUseCase throws`,() => {
+    test(`Should return ${StatusCodes.INTERNAL_SERVER_ERROR} if AuthUseCase throws`,async () => {
         const authUseCaseSpy = makeAuthUseCaseWithError();
         const sut = new LoginRouter(authUseCaseSpy)
         const httpRequest: httpRequest = {
@@ -143,7 +143,7 @@ describe('Login Router',() => {
             },
             statusCode: 0
         }
-        const httpResponse = sut.route(httpRequest)
+        const httpResponse = await sut.route(httpRequest)
         expect(httpResponse.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
         expect(httpResponse.body).toEqual(new ServerError());
     })
