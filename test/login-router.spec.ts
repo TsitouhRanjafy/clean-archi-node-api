@@ -5,10 +5,13 @@ import { MissingParamError } from '../src/interfaces/helpers/missing-param.error
 import { httpRequest } from '../src/core/entities/http';
 
 
+const makeSut = () => {
+    return new LoginRouter();
+}
 
 describe('Login Router',() => {
     test(`Should return ${StatusCodes.BAD_REQUEST} if no email is provided`,() => {
-        const sut = new LoginRouter()
+        const sut = makeSut()
         const httpRequest: httpRequest = {
             body: {
                 password: 'any_password',
@@ -22,7 +25,7 @@ describe('Login Router',() => {
     })
 
     test(`Should return ${StatusCodes.BAD_REQUEST} if no password is provided`,() => {
-        const sut = new LoginRouter()
+        const sut = makeSut()
         const httpRequest: httpRequest = {
             body: {
                 password: '',
@@ -35,8 +38,8 @@ describe('Login Router',() => {
         expect(httpResponse.body).toEqual(new MissingParamError('email or password'))
     })
 
-    test(`Should return ${StatusCodes.INTERNAL_SERVER_ERROR} if no httpRequest is provided`,() => {
-        const sut = new LoginRouter()
+    test(`Should return ${StatusCodes.INTERNAL_SERVER_ERROR} if no httpRequest is provided or httpRequest has no body`,() => {
+        const sut = makeSut()
         const httpRequest: any = undefined; // eslint-disable-line 
         const httpResponse: httpRequest = sut.route(httpRequest) // eslint-disable-line 
         expect(httpResponse.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR)
