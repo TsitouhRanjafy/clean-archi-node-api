@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { LoginRouter } from '../src/interfaces/routes/login.router';
 import { MissingParamError } from '../src/interfaces/helpers/missing-param.error';
 import { httpRequest, login } from '../src/core/entities/http';
+import { UnauthorizedError } from '../src/interfaces/helpers/unauthorized.error';
 
 
 export class AuthUseCase {
@@ -89,5 +90,6 @@ describe('Login Router',() => {
         }
         const httpResponse = sut.route(httpRequest)
         expect(httpResponse.statusCode).toBe(StatusCodes.UNAUTHORIZED)
+        expect(httpResponse.body).toEqual(new UnauthorizedError())
     })
 })

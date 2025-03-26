@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes"
 import { httpRequest, login } from "../../core/entities/http"
 import { MissingParamError } from "../helpers/missing-param.error"
 import { AuthUseCase } from "../../../test/login-router.spec"
+import { UnauthorizedError } from "../helpers/unauthorized.error";
 
 export class LoginRouter {
     authUseCase: AuthUseCase;
@@ -25,7 +26,7 @@ export class LoginRouter {
         }
         this.authUseCase.auth(email,password);
         return {
-            body: { email: '',password: '' },
+            body: new UnauthorizedError(),
             statusCode: StatusCodes.UNAUTHORIZED
         }
     }
