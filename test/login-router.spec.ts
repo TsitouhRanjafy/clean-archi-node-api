@@ -1,45 +1,10 @@
 import {describe, expect, test} from '@jest/globals';
 import { StatusCodes } from 'http-status-codes';
-
-class LoginRouter {
-    route(httpRequest: httpRequest): httpRequest {
-        if (!httpRequest || !httpRequest.body){
-            return {
-                body: new MissingParamError('httpRequest'),
-                statusCode: StatusCodes.INTERNAL_SERVER_ERROR
-            }
-        }
-        const { email,password } = httpRequest.body as login
-        if (!email || !password){
-            return {
-                body: new MissingParamError('email or password'),
-                statusCode: StatusCodes.BAD_REQUEST
-            }
-        }
-        return {
-            body: { email,password },
-            statusCode: StatusCodes.OK
-        }
-    }
-}
+import { LoginRouter } from '../src/interfaces/routes/login.router';
+import { MissingParamError } from '../src/interfaces/helpers/missing-param.error';
+import { httpRequest } from '../src/core/entities/http';
 
 
-interface login {
-    password: string,
-    email: string
-}
-
-interface httpRequest {
-    body: login | MissingParamError
-    statusCode: number;
-}
-
-class MissingParamError extends Error {
-    constructor(paramName: string){
-        super(`Missing param: ${paramName}`);
-        this.name = 'MissingParamError'
-    }
-}
 
 describe('Login Router',() => {
     test(`Should return ${StatusCodes.BAD_REQUEST} if no email is provided`,() => {
