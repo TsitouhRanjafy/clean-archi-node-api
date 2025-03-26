@@ -4,9 +4,10 @@ import { LoginRouter } from '../src/interfaces/routes/login.router';
 import { MissingParamError } from '../src/interfaces/helpers/missing-param.error';
 import { httpRequest, login } from '../src/core/entities/http';
 import { UnauthorizedError } from '../src/interfaces/helpers/unauthorized.error';
+import { ServerError } from '../src/interfaces/helpers/server.error';
 
 
-export class AuthUseCase {
+export class AuthUseCaseSpy {
     email!: string;
     password!: string;
     accesToken!:string | null;
@@ -19,12 +20,30 @@ export class AuthUseCase {
 
 }
 
+const makeAuthUseCase = () => {
+    return new AuthUseCaseSpy()
+}
+
+const makeAuthUseCaseWithError = () => {
+    class AuthUseCase {
+        email!: string;
+        password!: string;
+        accesToken!:string | null;
+        
+        auth(email: string,password: string): string | null {
+            this.email = email;
+            this.password = password;
+            throw new Error()
+        }
+    }
+    return new AuthUseCase()
+}
 
 
 // SUT = System Under Test (systéme sous test)
 // Spy = espion 
 const makeSut = () => { 
-    const authUseCaseSpy = new AuthUseCase()
+    const authUseCaseSpy = makeAuthUseCase();
     const sut = new LoginRouter(authUseCaseSpy);
     authUseCaseSpy.accesToken = "valid_token"
     return {
@@ -67,7 +86,7 @@ describe('Login Router',() => {
         const httpRequest: any = undefined; // eslint-disable-line 
         const httpResponse: httpRequest = sut.route(httpRequest) // eslint-disable-line 
         expect(httpResponse.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR)
-        expect(httpResponse.body).toEqual(new MissingParamError('httpRequest'))
+        expect(httpResponse.body).toEqual(new ServerError())
     })
 
     test(`Should call AuthUseCase with correct params`,() => {
@@ -112,6 +131,21 @@ describe('Login Router',() => {
         const httpResponse = sut.route(httpRequest)
         expect(httpResponse.statusCode).toBe(StatusCodes.OK);
         expect(httpResponse.body).toEqual(authUseCaseSpy.accesToken);
+    })
+
+    test(`Should return ${StatusCodes.INTERNAL_SERVER_ERROR} if AuthUseCase throws`,() => {
+        const authUseCaseSpy = makeAuthUseCaseWithError();
+        const sut = new LoginRouter(authUseCaseSpy)
+        const httpRequest: httpRequest = {
+            body: {
+                email: "valide_email@gmail.com",
+                password: "valide_password"
+            },
+            statusCode: 0
+        }
+        const httpResponse = sut.route(httpRequest)
+        expect(httpResponse.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
+        expect(httpResponse.body).toEqual(new ServerError());
     })
 
 })

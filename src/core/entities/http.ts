@@ -1,4 +1,5 @@
 import { MissingParamError } from "../../interfaces/helpers/missing-param.error";
+import { ServerError } from "../../interfaces/helpers/server.error";
 
 export interface login {
     password: string,
@@ -6,6 +7,6 @@ export interface login {
 }
 
 export interface httpRequest {
-    body: login | MissingParamError | string
+    body: login | MissingParamError | string | ServerError
     statusCode: number;
 }
