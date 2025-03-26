@@ -6,6 +6,6 @@ export interface login {
 }
 
 export interface httpRequest {
-    body: login | MissingParamError
+    body: login | MissingParamError | string
     statusCode: number;
 }

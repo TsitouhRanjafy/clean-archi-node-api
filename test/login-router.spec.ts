@@ -9,18 +9,24 @@ import { UnauthorizedError } from '../src/interfaces/helpers/unauthorized.error'
 export class AuthUseCase {
     email!: string;
     password!: string;
+    accesToken!:string | null;
     
-    auth(email: string,password: string) {
+    auth(email: string,password: string): string | null {
         this.email = email;
         this.password = password;
+        return this.accesToken;
     }
+
 }
+
+
 
 // SUT = System Under Test (systéme sous test)
 // Spy = espion 
 const makeSut = () => { 
     const authUseCaseSpy = new AuthUseCase()
     const sut = new LoginRouter(authUseCaseSpy);
+    authUseCaseSpy.accesToken = "valid_token"
     return {
         sut, 
         authUseCaseSpy
@@ -79,8 +85,9 @@ describe('Login Router',() => {
         expect(authUseCaseSpy.password).toBe(body.password)
     })
 
-    test(`Should return ${StatusCodes.UNAUTHORIZED} when invalid credntials are provided`,() => {
-        const { sut } = makeSut()
+    test(`Should return ${StatusCodes.UNAUTHORIZED} when invalid credentials are provided`,() => {
+        const { sut, authUseCaseSpy } = makeSut();
+        authUseCaseSpy.accesToken = null
         const httpRequest: httpRequest = {
             body: {
                 email: "any_email@gmail.com",
@@ -92,4 +99,19 @@ describe('Login Router',() => {
         expect(httpResponse.statusCode).toBe(StatusCodes.UNAUTHORIZED)
         expect(httpResponse.body).toEqual(new UnauthorizedError())
     })
+
+    test(`Should return ${StatusCodes.OK} when valid credentials are provided`,() => {
+        const { sut, authUseCaseSpy } = makeSut();
+        const httpRequest: httpRequest = {
+            body: {
+                email: "valide_email@gmail.com",
+                password: "valide_password"
+            },
+            statusCode: 0
+        }
+        const httpResponse = sut.route(httpRequest)
+        expect(httpResponse.statusCode).toBe(StatusCodes.OK);
+        expect(httpResponse.body).toEqual(authUseCaseSpy.accesToken);
+    })
+
 })

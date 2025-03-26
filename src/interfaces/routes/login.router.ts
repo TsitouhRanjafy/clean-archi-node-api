@@ -4,6 +4,7 @@ import { MissingParamError } from "../helpers/missing-param.error"
 import { AuthUseCase } from "../../../test/login-router.spec"
 import { UnauthorizedError } from "../helpers/unauthorized.error";
 
+
 export class LoginRouter {
     authUseCase: AuthUseCase;
 
@@ -17,6 +18,7 @@ export class LoginRouter {
                 statusCode: StatusCodes.INTERNAL_SERVER_ERROR
             }
         }
+        
         const { email,password } = httpRequest.body as login
         if (!email || !password){
             return {
@@ -24,10 +26,16 @@ export class LoginRouter {
                 statusCode: StatusCodes.BAD_REQUEST
             }
         }
-        this.authUseCase.auth(email,password);
+        const accessToken = this.authUseCase.auth(email,password);
+        if (!accessToken){
+            return {
+                body: new UnauthorizedError(),
+                statusCode: StatusCodes.UNAUTHORIZED
+            }
+        }
         return {
-            body: new UnauthorizedError(),
-            statusCode: StatusCodes.UNAUTHORIZED
+            statusCode: StatusCodes.OK,
+            body: accessToken
         }
     }
 }
