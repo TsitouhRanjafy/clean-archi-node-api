@@ -1,8 +1,14 @@
 import { StatusCodes } from "http-status-codes"
 import { httpRequest, login } from "../../core/entities/http"
 import { MissingParamError } from "../helpers/missing-param.error"
+import { AuthUseCase } from "../../../test/login-router.spec"
 
 export class LoginRouter {
+    authUseCase: AuthUseCase;
+
+    constructor(authUseCase: AuthUseCase){
+        this.authUseCase = authUseCase
+    }
     route(httpRequest: httpRequest): httpRequest {
         if (!httpRequest || !httpRequest.body){
             return {
@@ -21,5 +27,6 @@ export class LoginRouter {
             body: { email,password },
             statusCode: StatusCodes.OK
         }
+        this.authUseCase.auth('other_email','password');
     }
 }
