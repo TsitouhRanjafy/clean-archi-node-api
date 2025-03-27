@@ -1,5 +1,5 @@
-import { MissingParamError } from "../../interfaces/helpers/missing-param.error";
-import { ServerError } from "../../interfaces/helpers/server.error";
+import { MissingParamError } from "../../interfaces/errors";
+import { ServerError } from "../../interfaces/errors";
 
 export interface login {
     password: string,

@@ -1,11 +1,9 @@
 import {describe, expect, test} from '@jest/globals';
 import { StatusCodes } from 'http-status-codes';
 import { LoginRouter } from '../src/interfaces/routes/login.router';
-import { MissingParamError } from '../src/interfaces/helpers/missing-param.error';
-import { httpRequest, login } from '../src/core/entities/http';
-import { UnauthorizedError } from '../src/interfaces/helpers/unauthorized.error';
-import { ServerError } from '../src/interfaces/helpers/server.error';
-import { InvalidParamError } from '../src/interfaces/helpers/invalid-param.error';
+import { httpRequest, login } from '../src/core/entities/httpRequest';
+import { InvalidParamError, MissingParamError, ServerError, UnauthorizedError } from '../src/interfaces/errors';
+
 
 
 export class AuthUseCaseSpy {

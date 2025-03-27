@@ -21,7 +21,7 @@ export default tseslint.config(
 				 },
 				project: "tsconfig.json",
 				tsconfigRootDir: tsconfigRoot,
-				projectFolderIgnoreList: ["**dist**"],
+				projectFolderIgnoreList: ["**dist**","coverage"],
 				sourceType: "module"
 			},
 		},

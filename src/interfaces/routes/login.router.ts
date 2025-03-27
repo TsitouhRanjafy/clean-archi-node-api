@@ -1,10 +1,9 @@
 import { StatusCodes } from "http-status-codes";
-import { httpRequest, login } from "../../core/entities/http";
-import { MissingParamError } from "../helpers/missing-param.error";
+import { httpRequest, login } from "../../core/entities/httpRequest";
+import { MissingParamError } from "../errors/missing-param.error";
 import { AuthUseCaseSpy, EmailValidatorSpy } from "../../../test/login-router.spec";
-import { UnauthorizedError } from "../helpers/unauthorized.error";
-import { ServerError } from "../helpers/server.error";
-import { InvalidParamError } from "../helpers/invalid-param.error";
+import { InvalidParamError, ServerError, UnauthorizedError } from "../errors";
+
 
 
 
