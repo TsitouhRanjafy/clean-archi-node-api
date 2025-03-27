@@ -1,5 +1,6 @@
 export class TokenGenerator {
-    generate(): string {
+    generate(user_id: string): string { // eslint-disable-line
+        // pour simuler le generator
         return "token"
     }
 }
