@@ -177,18 +177,4 @@ describe('Login Router',() => {
         expect(httpResponse.body).toEqual(new InvalidParamError('email'))
     })
 
-    // test(`Should return ${StatusCodes.BAD_REQUEST} if an invalid password is provided`,async () => {
-    //     const { sut } = makeSut()
-    //     const httpRequest: httpRequest = {
-    //         body: {
-    //             email: "any_email@gmail.com",
-    //             password: "invalid"
-    //         },
-    //         statusCode: 0
-    //     }
-    //     const httpResponse = await sut.route(httpRequest)
-    //     expect(httpResponse.statusCode).toBe(StatusCodes.BAD_REQUEST);
-    //     expect(httpResponse.body).toEqual(new InvalidParamError('password'))
-    // })
-
 })
