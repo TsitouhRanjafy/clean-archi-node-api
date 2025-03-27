@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test:jest": "jest --silent --verbose --watchAll",
+    "test:ci":"jest",
     "test:lint-staged": "lint-staged",
     "prepare": "husky",
     "start:dev": "nodemon ./src/main.ts",
