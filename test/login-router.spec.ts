@@ -5,7 +5,7 @@ import { MissingParamError } from '../src/interfaces/helpers/missing-param.error
 import { httpRequest, login } from '../src/core/entities/http';
 import { UnauthorizedError } from '../src/interfaces/helpers/unauthorized.error';
 import { ServerError } from '../src/interfaces/helpers/server.error';
-import { InvalidParamError } from '../src/interfaces/helpers/Invalid-param.error';
+import { InvalidParamError } from '../src/interfaces/helpers/invalid-param.error';
 
 
 export class AuthUseCaseSpy {
@@ -19,6 +19,14 @@ export class AuthUseCaseSpy {
         return this.accesToken;
     }
 
+}
+
+export class EmailValidatorSpy {
+    #emailRegex = /email/
+
+    isValid(email: string): boolean {
+        return this.#emailRegex.test(email);
+    }
 }
 
 const makeAuthUseCase = () => {
@@ -40,16 +48,21 @@ const makeAuthUseCaseWithError = () => {
     return new AuthUseCase()
 }
 
+const makeEmailValidator = () => {
+    return new EmailValidatorSpy();
+}
 
 // SUT = System Under Test (systéme sous test)
 // Spy = espion 
 const makeSut = () => { 
     const authUseCaseSpy = makeAuthUseCase();
-    const sut = new LoginRouter(authUseCaseSpy);
+    const emailValidatorSpy = makeEmailValidator();
+    const sut = new LoginRouter(authUseCaseSpy,emailValidatorSpy);
     authUseCaseSpy.accesToken = "valid_token"
     return {
         sut, 
-        authUseCaseSpy
+        authUseCaseSpy,
+        emailValidatorSpy
     }
 }
 
@@ -136,7 +149,8 @@ describe('Login Router',() => {
 
     test(`Should return ${StatusCodes.INTERNAL_SERVER_ERROR} if AuthUseCase throws`,async () => {
         const authUseCaseSpy = makeAuthUseCaseWithError();
-        const sut = new LoginRouter(authUseCaseSpy)
+        const emailValidatorSpy = makeEmailValidator()
+        const sut = new LoginRouter(authUseCaseSpy,emailValidatorSpy)
         const httpRequest: httpRequest = {
             body: {
                 email: "valide_email@gmail.com",
@@ -149,7 +163,7 @@ describe('Login Router',() => {
         expect(httpResponse.body).toEqual(new ServerError());
     })
 
-    test(`Should return ${StatusCodes.BAD_REQUEST} if an Invalid email is provided`,async () => {
+    test(`Should return ${StatusCodes.BAD_REQUEST} if an invalid email is provided`,async () => {
         const { sut } = makeSut()
         const httpRequest: httpRequest = {
             body: {
@@ -162,5 +176,19 @@ describe('Login Router',() => {
         expect(httpResponse.statusCode).toBe(StatusCodes.BAD_REQUEST);
         expect(httpResponse.body).toEqual(new InvalidParamError('email'))
     })
+
+    // test(`Should return ${StatusCodes.BAD_REQUEST} if an invalid password is provided`,async () => {
+    //     const { sut } = makeSut()
+    //     const httpRequest: httpRequest = {
+    //         body: {
+    //             email: "any_email@gmail.com",
+    //             password: "invalid"
+    //         },
+    //         statusCode: 0
+    //     }
+    //     const httpResponse = await sut.route(httpRequest)
+    //     expect(httpResponse.statusCode).toBe(StatusCodes.BAD_REQUEST);
+    //     expect(httpResponse.body).toEqual(new InvalidParamError('password'))
+    // })
 
 })

@@ -1,19 +1,18 @@
 import { StatusCodes } from "http-status-codes";
 import { httpRequest, login } from "../../core/entities/http";
 import { MissingParamError } from "../helpers/missing-param.error";
-import { AuthUseCaseSpy } from "../../../test/login-router.spec";
+import { AuthUseCaseSpy, EmailValidatorSpy } from "../../../test/login-router.spec";
 import { UnauthorizedError } from "../helpers/unauthorized.error";
 import { ServerError } from "../helpers/server.error";
-import { InvalidParamError } from "../helpers/Invalid-param.error";
+import { InvalidParamError } from "../helpers/invalid-param.error";
 
 
 
 export class LoginRouter {
-    authUseCase: AuthUseCaseSpy;
 
-    constructor(authUseCase: AuthUseCaseSpy){
-        this.authUseCase = authUseCase
-    }
+    constructor(
+        private authUseCase: AuthUseCaseSpy, 
+        private emailValidator: EmailValidatorSpy){}
 
     async route(httpRequest: httpRequest): Promise<httpRequest> {
         try {
@@ -24,7 +23,7 @@ export class LoginRouter {
                     statusCode: StatusCodes.BAD_REQUEST
                 }
             }
-            if (!/email/.test(email)){
+            if (!this.emailValidator.isValid(email)){
                 return { body: new InvalidParamError('email'),statusCode: StatusCodes.BAD_REQUEST }
             }
             const accessToken = await this.authUseCase.auth(email,password);

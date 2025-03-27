@@ -9,7 +9,7 @@
     "prepare": "husky",
     "start:dev": "nodemon ./src/main.ts",
     "start:build": "npx tsc && node ./dist/src/main.js",
-    "fix:lint-staged": "eslint --fix && git add --all && jest"
+    "fix:lint": "eslint --fix && git add --all && jest"
   },
   "repository": {
     "type": "git",
