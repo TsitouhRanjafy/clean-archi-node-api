@@ -1,10 +1,7 @@
-import { MissingParamError } from "../../interfaces/errors";
-import { ServerError } from "../../interfaces/errors";
+import { MissingParamError } from "../errors/missing-param.error";
+import { ServerError } from "../errors/server.error";
+import { login } from "./type";
 
-export interface login {
-    password: string,
-    email: string
-}
 
 export interface httpRequest {
     body: login | MissingParamError | string | ServerError

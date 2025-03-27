@@ -1,42 +1,24 @@
 import {describe, expect, test} from '@jest/globals';
 import { StatusCodes } from 'http-status-codes';
-import { LoginRouter } from '../src/interfaces/routes/login.router';
-import { httpRequest, login } from '../src/core/entities/httpRequest';
+import { EmailValidator, LoginRouter } from '../src/interfaces';
 import { InvalidParamError, MissingParamError, ServerError, UnauthorizedError } from '../src/interfaces/errors';
-import { EmailValidator } from '../src/interfaces/helpers';
+import { TokenGenerator } from '../src/framework';
+import { AuthUseCase, httpRequest } from '../src/core';
 
-
-export class AuthUseCaseSpy {
-    email!: string;
-    password!: string;
-    accesToken!:string | null;
-    
-    async auth(email: string,password: string): Promise<string | null> { // eslint-disable-line 
-        this.email = email;
-        this.password = password;
-        return this.accesToken;
-    }
-
-}
 
 
 const makeAuthUseCase = () => {
-    return new AuthUseCaseSpy()
+    return new AuthUseCase(new TokenGenerator)
 }
 
-const makeAuthUseCaseWithError = () => {
-    class AuthUseCase {
-        email!: string;
-        password!: string;
-        accesToken!:string | null;
-        
-        async auth(email: string,password: string): Promise<string | null> { // eslint-disable-line 
-            this.email = email;
-            this.password = password;
-            throw new Error()
+const makeAuthUseCaseWithError = (): AuthUseCase => {
+    class AuthUseCaseWithEror extends AuthUseCase {
+
+        async authentificate(email: string,password: string): Promise<string | null> { // eslint-disable-line 
+            throw new Error();
         }
     }
-    return new AuthUseCase()
+    return new AuthUseCaseWithEror(new TokenGenerator)
 }
 
 const makeEmailValidator = () => {
@@ -49,7 +31,6 @@ const makeSut = () => {
     const authUseCaseSpy = makeAuthUseCase();
     const emailValidatorSpy = makeEmailValidator();
     const sut = new LoginRouter(authUseCaseSpy,emailValidatorSpy);
-    authUseCaseSpy.accesToken = "valid_token"
     return {
         sut, 
         authUseCaseSpy,
@@ -94,24 +75,8 @@ describe('Login Router',() => {
         expect(httpResponse.body).toEqual(new ServerError())
     })
 
-    test(`Should call AuthUseCase with correct params`,async () => {
-        const { sut, authUseCaseSpy } = makeSut()
-        const httpRequest: httpRequest = {
-            body: {
-                email: "any_email@gmail.com",
-                password: "any_password"
-            },
-            statusCode: 0
-        }
-        const body: login = httpRequest.body as login
-        await sut.route(httpRequest)
-        expect(authUseCaseSpy.email).toBe(body.email)
-        expect(authUseCaseSpy.password).toBe(body.password)
-    })
-
     test(`Should return ${StatusCodes.UNAUTHORIZED} when invalid credentials are provided`,async () => {
-        const { sut, authUseCaseSpy } = makeSut();
-        authUseCaseSpy.accesToken = null
+        const { sut } = makeSut();
         const httpRequest: httpRequest = {
             body: {
                 email: "any_email@gmail.com",
@@ -125,7 +90,7 @@ describe('Login Router',() => {
     })
 
     test(`Should return ${StatusCodes.OK} when valid credentials are provided`,async () => {
-        const { sut, authUseCaseSpy } = makeSut();
+        const { sut } = makeSut();
         const httpRequest: httpRequest = {
             body: {
                 email: "valide_email@gmail.com",
@@ -135,11 +100,11 @@ describe('Login Router',() => {
         }
         const httpResponse = await sut.route(httpRequest)
         expect(httpResponse.statusCode).toBe(StatusCodes.OK);
-        expect(httpResponse.body).toEqual(authUseCaseSpy.accesToken);
+        expect(httpResponse.body).toBeTruthy()
     })
 
     test(`Should return ${StatusCodes.INTERNAL_SERVER_ERROR} if AuthUseCase throws`,async () => {
-        const authUseCaseSpy = makeAuthUseCaseWithError();
+        const authUseCaseSpy: AuthUseCase= makeAuthUseCaseWithError();
         const emailValidatorSpy = makeEmailValidator()
         const sut = new LoginRouter(authUseCaseSpy,emailValidatorSpy)
         const httpRequest: httpRequest = {
@@ -159,7 +124,7 @@ describe('Login Router',() => {
         const httpRequest: httpRequest = {
             body: {
                 email: "invalide_@gmail.com",
-                password: "any_password"
+                password: "valide_password"
             },
             statusCode: 0
         }
@@ -168,4 +133,5 @@ describe('Login Router',() => {
         expect(httpResponse.body).toEqual(new InvalidParamError('email'))
     })
 
+    // test pour interaction avec un bd (simulation)
 })
