@@ -4,6 +4,7 @@ import { MissingParamError } from "../helpers/missing-param.error";
 import { AuthUseCaseSpy } from "../../../test/login-router.spec";
 import { UnauthorizedError } from "../helpers/unauthorized.error";
 import { ServerError } from "../helpers/server.error";
+import { InvalidParamError } from "../helpers/Invalid-param.error";
 
 
 
@@ -23,6 +24,9 @@ export class LoginRouter {
                     statusCode: StatusCodes.BAD_REQUEST
                 }
             }
+            if (!/email/.test(email)){
+                return { body: new InvalidParamError('email'),statusCode: StatusCodes.BAD_REQUEST }
+            }
             const accessToken = await this.authUseCase.auth(email,password);
             if (!accessToken){
                 return {
@@ -35,7 +39,7 @@ export class LoginRouter {
                 body: accessToken
             }
         } catch (error) {
-            console.log("++",error);
+            console.log(error);
             return {
                 body: new ServerError(),
                 statusCode: StatusCodes.INTERNAL_SERVER_ERROR

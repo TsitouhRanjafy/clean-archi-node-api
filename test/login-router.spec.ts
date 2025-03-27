@@ -5,6 +5,7 @@ import { MissingParamError } from '../src/interfaces/helpers/missing-param.error
 import { httpRequest, login } from '../src/core/entities/http';
 import { UnauthorizedError } from '../src/interfaces/helpers/unauthorized.error';
 import { ServerError } from '../src/interfaces/helpers/server.error';
+import { InvalidParamError } from '../src/interfaces/helpers/Invalid-param.error';
 
 
 export class AuthUseCaseSpy {
@@ -146,6 +147,20 @@ describe('Login Router',() => {
         const httpResponse = await sut.route(httpRequest)
         expect(httpResponse.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
         expect(httpResponse.body).toEqual(new ServerError());
+    })
+
+    test(`Should return ${StatusCodes.BAD_REQUEST} if an Invalid email is provided`,async () => {
+        const { sut } = makeSut()
+        const httpRequest: httpRequest = {
+            body: {
+                email: "invalide_@gmail.com",
+                password: "any_password"
+            },
+            statusCode: 0
+        }
+        const httpResponse = await sut.route(httpRequest)
+        expect(httpResponse.statusCode).toBe(StatusCodes.BAD_REQUEST);
+        expect(httpResponse.body).toEqual(new InvalidParamError('email'))
     })
 
 })
