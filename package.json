@@ -4,8 +4,8 @@
   "description": "API Rest with NodeTS,TDD and Clean Architecture Design Patterns.",
   "main": "index.js",
   "scripts": {
-    "test:jest": "jest -o",
-    "test:all":"jest --all",
+    "test:jest": "jest -o --silent",
+    "test:all":"jest --silent",
     "test:prepush":"jest --bail --silent",
     "test:ci":"npm run test:all -- --coverage --silent",
     "test:lint-staged": "lint-staged",

@@ -1,7 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import { httpRequest, login } from "../../core/entities/httpRequest";
 import { MissingParamError } from "../errors/missing-param.error";
-import { AuthUseCaseSpy, EmailValidatorSpy } from "../../../test/login-router.spec";
+import { AuthUseCaseSpy} from "../../../test/login-router.spec";
+import { EmailValidator } from "../helpers";
 import { InvalidParamError, ServerError, UnauthorizedError } from "../errors";
 
 
@@ -11,7 +12,7 @@ export class LoginRouter {
 
     constructor(
         private authUseCase: AuthUseCaseSpy, 
-        private emailValidator: EmailValidatorSpy){}
+        private emailValidator: EmailValidator){}
 
     async route(httpRequest: httpRequest): Promise<httpRequest> {
         try {

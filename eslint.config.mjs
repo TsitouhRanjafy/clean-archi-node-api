@@ -16,12 +16,13 @@ export default tseslint.config(
 					allowDefaultProject: [ 
 						"eslint.config.mjs",
 						"babel.config.js",
+						"jest.config.ts"
 					],
 					defaultProject: "tsconfig.json"
 				 },
 				project: "tsconfig.json",
 				tsconfigRootDir: tsconfigRoot,
-				projectFolderIgnoreList: ["**dist**","coverage"],
+				projectFolderIgnoreList: ["**dist**"],
 				sourceType: "module"
 			},
 		},

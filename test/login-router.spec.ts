@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { LoginRouter } from '../src/interfaces/routes/login.router';
 import { httpRequest, login } from '../src/core/entities/httpRequest';
 import { InvalidParamError, MissingParamError, ServerError, UnauthorizedError } from '../src/interfaces/errors';
-
+import { EmailValidator } from '../src/interfaces/helpers';
 
 
 export class AuthUseCaseSpy {
@@ -19,13 +19,6 @@ export class AuthUseCaseSpy {
 
 }
 
-export class EmailValidatorSpy {
-    #emailRegex = /email/
-
-    isValid(email: string): boolean {
-        return this.#emailRegex.test(email);
-    }
-}
 
 const makeAuthUseCase = () => {
     return new AuthUseCaseSpy()
@@ -47,7 +40,7 @@ const makeAuthUseCaseWithError = () => {
 }
 
 const makeEmailValidator = () => {
-    return new EmailValidatorSpy();
+    return new EmailValidator();
 }
 
 // SUT = System Under Test (systéme sous test)
