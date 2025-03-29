@@ -20,6 +20,7 @@
 # docs
 
 - [Medium](https://swoodpartners.medium.com/introduction-aux-principes-de-la-clean-architecture-dans-une-api-nodejs-express-efed8d9d2d03)
+- [Different type of test](https://www.atlassian.com/fr/continuous-delivery/software-testing/types-of-software-testing)
 
 # Différence principale entre infrastructure et framework :
 
